@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.0 (2026-10-13)
+
+- Long work whose phases have disjoint files runs those phases as parallel subagents by default, each at its own tier, then verifies in the session. Short work stays in one session.
+
 ## 2.3.0 (2026-10-13)
 
 - Long work is always planned, even in one session: phase-by-phase work keeps each phase's reading scoped, so the context grows more slowly. Small work still skips the table.

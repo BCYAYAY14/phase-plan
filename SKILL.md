@@ -100,9 +100,10 @@ The same table serves both billing kinds: per token it saves dollars, on a subsc
 - **Phases above the session tier** (a Large phase in a Mid session) go to a subagent at their tier; everything else stays in the session. A phase below the session tier stays in the session: a handoff costs more than the cheaper model saves.
 - The table still earns its keep: order, files, checks, rulings.
 
-Delegate to subagents only when one of these holds, and say which:
+**Long work with separable phases: parallel subagents.** When the work is long (a large codebase, several substantial parts) and two or more phases have disjoint Files, run those phases as parallel subagents, each at its own tier, then verify in the session. Each subagent reads only its own part and the session only reads short reports, so no context grows large: it finishes several times sooner and costs no more than one session. Short work stays in one session, where a subagent's cold start costs more than it saves.
+
+Otherwise delegate to subagents only when one of these holds, and say which:
 - the remaining work will not fit in one session: it spans days, waits on rulings between phases, or would read and write more than about half the context window;
-- phases can run in parallel and finishing sooner matters more than cost;
 - the user asks.
 
 **Orchestrate from Mid.** When phases do run as subagents, the session that briefs them, merges and logs only needs Mid. If this session is on a Large or Top model, say so before the first phase and recommend restarting on Mid (`claude --model sonnet`) with "run the plan as subagents": the written plan is the handoff, so nothing is lost. Large phases still get Large subagents.
