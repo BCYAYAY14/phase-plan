@@ -2,7 +2,7 @@
 
 A Claude Code skill that turns "what's left" in a repo into an ordered table of phases, each with the cheapest model and effort level that won't risk quality. It agrees the table with you, writes it into the repo's instruction file (`CLAUDE.md` or `AGENTS.md`; otherwise `.phase-plan/PHASES.md`, kept out of git), runs the plan (in one session by default), and logs each phase.
 
-Version 2.2.0 · [CHANGELOG](CHANGELOG.md) · MIT
+Version 2.3.0 · [CHANGELOG](CHANGELOG.md) · MIT
 
 ## Install
 
@@ -21,7 +21,7 @@ Update with `git -C ~/.claude/skills/phase-plan pull`.
 | "run the plan", "run phase 2" | Runs the phases in this session, on the lowest tier the plan needs (it tells you if a cheaper session would do); subagents only for work too big for one session, parallel work, or when you ask. Logs each phase and removes its row |
 | "/phase-plan pinned to opus medium" | Every phase on one model |
 
-It tells you when the work is too small to be worth phasing.
+It tells you when the work is too small to need a plan. For long work it always plans: working phase by phase keeps the context small, which is where it saves.
 
 ## Example
 

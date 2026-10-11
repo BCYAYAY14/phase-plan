@@ -35,7 +35,7 @@ Modes, picked from the request:
 
 Reply in chat first. Do not write anything yet.
 
-- **Should this be phased at all?** If the remaining work is one coherent change that fits in a single session (one area, roughly under ten files, no owner ruling in the middle, no part a cheaper model could do alone), say so and recommend one session at one model. Splitting costs a planning session plus a context reload per phase; it pays only when phases are long, separable, or cheap enough to run a tier lower.
+- **How much plan does this need?** Small work (one area, roughly under ten files, no ruling in the middle): say so and skip the table; one session at one model. Long work (a large codebase, several separable parts): always plan, even though it runs in one session. Working phase by phase keeps each phase's reading scoped to its own files, so the context grows more slowly and every later request re-reads less; that, not splitting into sessions, is where a plan saves. In each phase, read only what the phase's Files and Spec need.
 - Give the phases as a table: `# | Phase | Done when | Files | Spec | Model · effort | Why` (Why only in chat).
   - **Done when:** one checkable condition (a test passes, a screen shows X, a file exists). Never "implemented".
   - **Files:** the files or directories the phase writes. Two phases may run in parallel only if their Files do not overlap; say which can.

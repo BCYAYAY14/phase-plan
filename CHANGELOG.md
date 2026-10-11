@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.0 (2026-10-13)
+
+- Long work is always planned, even in one session: phase-by-phase work keeps each phase's reading scoped, so the context grows more slowly. Small work still skips the table.
+
 ## 2.2.0 (2026-10-13)
 
 - Design and front-end work (UI, layout, visual polish, interaction, motion, UI copy, choosing between designs) routes to Large by default; Mid only when the skill judges it enough, such as building an exact mockup or a mechanical UI change, and says why.
