@@ -1,6 +1,8 @@
 # phase-plan
 
-A Claude Code skill. It splits the remaining work in a repo into ordered phases, recommends a model and effort level for each (cheapest that does not risk quality), agrees them with the owner, then writes the table into the repo's handoff file (`CLAUDE.md` or `AGENTS.md`). When a phase is run later, it is delegated to a subagent with that model and effort.
+A Claude Code skill that turns "what's left" in a repo into an ordered table of phases, each with the cheapest model and effort level that won't risk quality. It agrees the table with you, writes it into the repo's instruction file (`CLAUDE.md` or `AGENTS.md`; otherwise `.phase-plan/PHASES.md`, kept out of git), runs the plan (in one session by default), and logs each phase.
+
+Version 2.0.0 · [CHANGELOG](CHANGELOG.md) · MIT
 
 ## Install
 
@@ -8,4 +10,33 @@ A Claude Code skill. It splits the remaining work in a repo into ordered phases,
 git clone https://github.com/BCYAYAY14/phase-plan ~/.claude/skills/phase-plan
 ```
 
-Then say "/phase-plan" or "split the remaining work into phases" in Claude Code.
+Update with `git -C ~/.claude/skills/phase-plan pull`.
+
+## Use
+
+| Say | It does |
+| --- | --- |
+| `/phase-plan`, "plan the phases", "what's left and which model" | Reads the plan, issues and TODOs, proposes phases in chat, writes them once you agree |
+| "/phase-plan dry run" | Proposes in chat, writes nothing |
+| "run the plan", "run phase 2" | Runs the phases in this session, on the lowest tier the plan needs (it tells you if a cheaper session would do); subagents only for work too big for one session, parallel work, or when you ask. Logs each phase and removes its row |
+| "/phase-plan pinned to opus medium" | Every phase on one model |
+
+It tells you when the work is too small to be worth phasing.
+
+## Example
+
+A small web app with a `TODO.md` listing a CSV export, a broken date filter, and a README refresh. The skill proposes:
+
+| # | Phase | Done when | Files | Spec | Model · effort |
+| --- | --- | --- | --- | --- | --- |
+| R1 | Ruling: CSV dates as ISO or locale? | Ruling recorded in TODO.md | none | TODO.md "Export" | none |
+| 1 | Find why the date filter drops today's rows | Failing test reproduces it | `src/filter.ts`, `test/filter.test.ts` | TODO.md "Filter bug" | Opus · high |
+| 2 | CSV export (after R1) | `npm test -- export` passes | `src/export/`, `test/export.test.ts` | TODO.md "Export" | Sonnet · medium |
+| 3 | README: export section | Section exists, commands run | `README.md` | TODO.md "Docs" | Sonnet · low |
+| 4 | Verify | `npm test && npm run lint` pass | none | `package.json` scripts | Haiku · low |
+
+Phases 1 and 2 touch different files, so they can run in parallel (each in its own worktree).
+
+## Models
+
+Rows are chosen by tier (Small, Mid, Large, Top) and mapped to what you have: in Claude Code today Haiku 5.5, Sonnet 5.5, Opus 5.5 and Fable 5.1 (Fable only when you ask). On another host the skill maps tiers by price band. It asks once whether you pay per token or by subscription: per token it optimises dollars; on a subscription it protects the top model's usage limit.

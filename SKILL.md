@@ -1,55 +1,122 @@
 ---
 name: phase-plan
-description: Split the remaining work into ordered phases, each with a recommended model and effort level, agree them with the owner, then write them into the repo's handoff file. Use when the user says "/phase-plan", "split the remaining into phases", "plan the phases", "what's left and which model", or asks to recommend models or effort levels for upcoming work.
+description: Split the remaining work into ordered phases, each with a recommended model tier and effort level, agree them with the user, then write them into the repo's handoff file. Use when the user says "/phase-plan", "split the remaining into phases", "plan the phases", "what's left and which model", "which model should do what", or asks to recommend models or effort levels for upcoming work. Also runs the plan, and can pin every phase to one model.
 ---
 
 # Phase plan
 
-Turn "what is left" into an ordered table of phases. Each phase gets a model and an effort level chosen to spend as few tokens as possible without risking quality. Then write the table into the handoff.
+Turn "what is left" into an ordered table of phases. Each phase gets a model and an effort level chosen to spend as little as possible without risking quality. Then write the table where the next session will find it, run phases on request, and log what each one cost.
+
+Modes, picked from the request:
+- **Plan** (default): steps 1 to 3.
+- **Dry run** ("dry run", "just show me", "don't write anything"): steps 1 and 2 only. Write nothing.
+- **Run** ("run phase 3", "do the next phase", "run the plan"): "How phases run" below. One session by default.
+- **Delegated** ("run the phases as subagents", "fan out"): every phase as a subagent, whatever the default would be.
+- **Pinned** ("all on Opus", "same model for every phase", "pin to sonnet medium"): plan as usual, but every non-owner row gets the one model and effort named.
 
 ## 1. Read before planning
 
-- The handoff: `CLAUDE.md` at the repo root (else `AGENTS.md`, else ask). Read it in full, and follow its rules on brevity, punctuation and where unbuilt work lives.
-- Every plan, runbook or ledger the handoff names as the home of unbuilt work. Read the unchecked items and the open sections, not the whole history.
-- `git status`, briefly. Another session may have finished something since the handoff was last updated. If a phase is already done, drop it and say so.
+**Where the plan will live.** The first that exists: `CLAUDE.md`, `AGENTS.md`, `.github/copilot-instructions.md` at the repo root. If none exists, the table goes in `.phase-plan/PHASES.md`, and `.phase-plan/` is added to the repo's local exclude file (`$(git rev-parse --git-common-dir)/info/exclude`, which changes no tracked file; skip silently if it is already there or cannot be written), so the plan and its log never ship with the work. Ask once whether to track it instead; if yes, move it to `PHASES.md` at the root. Follow the house rules that file states (brevity, punctuation, where unbuilt work lives). If it states none, use plain, neutral prose.
+
+**Where the work is.** In this order, stopping once the picture is complete:
+1. Every plan, roadmap or ledger the instruction file names as the home of unbuilt work. Read the unchecked items and open sections, not the history.
+2. Otherwise: `TODO.md`, `ROADMAP.md`, `PLAN*.md`, `docs/plan*`, a plan left by plan mode, open issues (`gh issue list --limit 50` when `gh` is authenticated and the repo has a remote).
+3. Only if still thin: `TODO` and `FIXME` comments (`git grep -n -E 'TODO|FIXME'`, summarised, not listed).
+
+**What is already done.** `git status` and `git log --oneline -10`. A row the plan calls done, or that looks done, is checked against the code before it is dropped: name the file, symbol or test that proves it. If nothing proves it, keep the row and say what is missing.
+
+**How to verify.** Find the project's own check command, in this order: what the instruction file says; `package.json` scripts (`test`, `lint`, `typecheck`, `build`); `Makefile` or `justfile` targets; `Cargo.toml` (`cargo test`); `pyproject.toml` or `pytest.ini` (`pytest`); `go.mod` (`go test ./...`); `*.xcodeproj` or `Package.swift` (`xcodebuild test` or `swift test`); CI config under `.github/workflows`. The verify phase names the exact command found. If none is found, say so in the "Before phase N" list.
+
+**What the user has.** Models available, and how they pay. Read it from the instruction file or earlier in the conversation; otherwise ask once with AskUserQuestion:
+- **Pay per token (API):** optimise dollars.
+- **Subscription with usage limits:** optimise the scarce limit, usually the top model's. Push work down a tier wherever quality holds, even when the token count rises.
 
 ## 2. Consult
 
-Reply in chat first. Do not write the file yet.
+Reply in chat first. Do not write anything yet.
 
-- Give the phases as a table: `# | Phase | Spec (where its detail lives) | Model · effort | Why` (the Why column only in chat).
-- Below the table, list what blocks or is stale before a phase can run (wrong version numbers, missing changelog items, gates). Then the order, marking which phases can run in parallel.
-- Ask with AskUserQuestion only when an answer would change the phases, for example whether to include a deferrable item. Otherwise recommend and move on.
-- If the user has already said "write it" or "put it in the handoff", go straight to step 3 after the table.
+- **Should this be phased at all?** If the remaining work is one coherent change that fits in a single session (one area, roughly under ten files, no owner ruling in the middle, no part a cheaper model could do alone), say so and recommend one session at one model. Splitting costs a planning session plus a context reload per phase; it pays only when phases are long, separable, or cheap enough to run a tier lower.
+- Give the phases as a table: `# | Phase | Done when | Files | Spec | Model · effort | Why` (Why only in chat).
+  - **Done when:** one checkable condition (a test passes, a screen shows X, a file exists). Never "implemented".
+  - **Files:** the files or directories the phase writes. Two phases may run in parallel only if their Files do not overlap; say which can.
+  - **Spec:** a pointer (file plus section), never a restatement.
+  - **Model · effort:** from "Choosing a model and an effort level" below. If the host has no effort setting, write the model only.
+- An owner ruling that blocks work is its own row, placed before the phase it blocks: the question in Phase, `Ruling recorded in <file>` in Done when, `none` in Model; the blocked phase says "after R1".
+- Below the table: what is stale or blocking ("Before phase N:"), then the order and what runs in parallel.
+- Ask with AskUserQuestion only when an answer changes the phases (include a deferrable item or not). Otherwise recommend and move on.
+- If the user already said "write it", go straight to step 3. In dry run, stop here.
 
-## 3. Write it into the handoff
+## 3. Write it
 
-- Put the phases inside one block delimited by `<!-- phases:start -->` and `<!-- phases:end -->`, in the handoff's "Next" section. Replace that block if it exists. If it does not, replace the existing "Next" list.
-- The handoff's table drops the Why column: `# | Phase | Spec | Model · effort`. Each Spec cell is a pointer (a file plus a section), never a restatement of the spec.
-- Under the table, add "Before phase N:" bullets for stale or blocking facts, and one "After <milestone>:" line for work that comes later.
-- Do not commit. Report in one line: the file, the line, and the number of phases.
+- The phases go in one block delimited by `<!-- phases:start -->` and `<!-- phases:end -->`, inside the file's "Next" section (create a `## Next` section if there is none). Replace the block if it exists.
+- **Leave nothing contradicting it.** Search the file for other "Next", "TODO", "Remaining" or "Up next" passages outside the block. Delete one the block now covers; merge a fact still true into the block's "Before phase N" lines. Say what was removed.
+- The written table drops Why: `# | Phase | Done when | Files | Spec | Model · effort`.
+- **Only open rows.** A finished row is removed, never ticked or marked DONE. Its outcome (date, what shipped, the usage line) goes to the plan file that owns the work, or to the "Log" section of `.phase-plan/PHASES.md` when there is no plan file.
+- Under the table: "Before phase N:" bullets for stale or blocking facts, and one "After <milestone>:" line for later work.
+- Do not commit. Report in one line: the file, the line, the number of phases, and anything removed.
 
 ## Choosing a model and an effort level
 
-| Work | Model · effort |
+Choose a **tier**, then map it to a model the user has.
+
+| Work | Tier · effort |
 | --- | --- |
-| Fixed commands that pass or fail (build, test, verify, lint) | Haiku · low; move up a model only on a failure |
-| Mechanical edits, renames, a runbook followed step by step, writing from an exact list | Sonnet · low |
-| A clear spec confined to a few files | Sonnet · medium |
-| A clear spec over a wide surface (two platforms, many screens, a screen check) | Sonnet · high |
-| Delicate code with a known cause (layout, concurrency, sync, migrations, anything the landmines warn about) | Opus · medium |
-| Diagnosis with an unknown cause, design, judgment against a contract | Opus · high |
-| Hard bugs that resist debugging, cross-cutting architecture | Opus · xhigh, or Fable only when the owner asks |
+| Fixed commands that pass or fail (build, test, lint, verify) | Small · low |
+| Mechanical edits, renames, a runbook followed step by step, prose from an exact list | Mid · low |
+| A clear spec confined to a few files | Mid · medium |
+| A clear spec over a wide surface (several platforms, many screens) | Mid · high |
+| Delicate code with a known cause (layout, concurrency, sync, migrations, anything the repo warns about) | Large · medium |
+| Diagnosis with an unknown cause, design, judgment against a contract | Large · high |
+| Hard bugs that resist debugging, cross-cutting architecture | Large · xhigh, or Top only when the user asks |
 | Owner-only steps (accounts, secrets, payments, devices, rulings) | none |
+
+Tier to model, for Claude Code (October 2026; update when the lineup changes):
+
+| Tier | Model | Agent tool `model` |
+| --- | --- | --- |
+| Small | Claude Haiku 5.5 | `haiku` |
+| Mid | Claude Sonnet 5.5 | `sonnet` |
+| Large | Claude Opus 5.5 | `opus` |
+| Top | Claude Fable 5.1 (opt-in) | `fable` |
+
+For another host (Codex, Cursor, another provider), map the tiers to its models by price band and state the mapping in chat. If a tier is missing, use the next tier up.
+
+On a subscription, prefer Mid over Large wherever the Large row's reason ("delicate", "judgment") does not clearly apply. On pay per token, the table stands.
 
 ## Saving tokens
 
-- Run verification once, after the last edit, as its own cheap phase. Never once per phase.
-- Phases that touch disjoint files run in parallel.
-- Opus never writes prose from a list, and Haiku never decides anything.
-- A phase that waits on an owner ruling is a phase of its own, placed before the build that needs the ruling.
-- Split a phase when one part is mechanical and another needs judgment. Merge phases that share their context, so it is read only once.
+- Verify once, after the last edit, as its own Small phase. Never once per phase.
+- Phases with disjoint Files run in parallel.
+- A Large model never writes prose from a list, and a Small model never decides anything.
+- Split a phase when one part is mechanical and another needs judgment. Merge phases that read the same context, so it is read once.
+- The phase brief points at the spec; it does not paste it.
 
-## Running a phase later
+## How phases run
 
-When asked to run a phase from the table, delegate it with the Agent tool, passing `model` and `effort` exactly as the table says. Once the phase is done and verified, tick or remove its row in the handoff.
+**Default: one session, on the tier most of the work needs.** Once the plan is agreed, work the phases in order in one session, each against its Done when. The saving is in the session's model, not in splitting: splitting costs a context reload per phase, a cheaper session does not.
+- **Session tier:** the tier of the bulk of the work (by size, not by count). If this session runs higher (an Opus session for a plan that is mostly Mid), say so and recommend starting the run on that tier (`claude --model sonnet`, then "run the plan"); the written plan is the handoff.
+- **Phases above the session tier** (a Large phase in a Mid session) go to a subagent at their tier; everything else stays in the session. A phase below the session tier stays in the session: a handoff costs more than the cheaper model saves.
+- The table still earns its keep: order, files, checks, rulings.
+
+Delegate to subagents only when one of these holds, and say which:
+- the remaining work will not fit in one session: it spans days, waits on rulings between phases, or would read and write more than about half the context window;
+- phases can run in parallel and finishing sooner matters more than cost;
+- the user asks.
+
+**Orchestrate from Mid.** When phases do run as subagents, the session that briefs them, merges and logs only needs Mid. If this session is on a Large or Top model, say so before the first phase and recommend restarting on Mid (`claude --model sonnet`) with "run the plan as subagents": the written plan is the handoff, so nothing is lost. Large phases still get Large subagents.
+
+**In this session**, per phase: do the work, check Done when, log a line (step 4 below, with `agent -`), remove the row. Scratch files (demo inputs, sample output for a README) go in `.phase-plan/scratch/`, never outside the repo.
+
+## Running a phase as a subagent
+
+1. **Brief.** Delegate with the Agent tool, passing `model` and `effort` exactly as the row says (in pinned mode, the pinned pair). The prompt carries only:
+   - the phase name and its Spec pointer (the agent reads the spec itself);
+   - **Files:** the only paths it may write; anything else means stop and report;
+   - **Done when:** the row's condition;
+   - **Verify:** "do not run the full verify; run only the narrow check named here", unless this is the verify phase;
+   - **Report:** one line: done or blocked, what changed (paths), and the one thing the next phase must know.
+   - **Scratch:** temporary files go in `.phase-plan/scratch/`, never outside the repo.
+2. **Parallel.** Phases running at the same time each get `isolation: "worktree"`. Merge each worktree back when it reports done; a conflict stops the run and goes to the user.
+3. **Escalate once.** On a failed or blocked report: retry once, one tier up (Small to Mid, Mid to Large, Large · medium to Large · high). On a second failure, stop and report both attempts. Never loop.
+4. **Log.** Append one line to the plan file's log (or the "Log" section of `.phase-plan/PHASES.md`): `<date> · phase <N> <name> · <model> · <effort> · <outcome> · agent <agent id, or - in this session> · retries <n>`.
+5. **Close.** Once Done when holds, remove the row (step 3's rule) and say so in one line.

@@ -1,0 +1,20 @@
+# Changelog
+
+## 2.0.0 (2026-10-12)
+
+- Works in any repo: falls back to `.phase-plan/PHASES.md`, locally ignored, when there is no instruction file, so the plan never ships with the work; finds work in plans, `TODO.md`, `ROADMAP.md`, open issues and TODO comments; finds the project's own verify command.
+- Tiers (Small, Mid, Large, Top) mapped to the models you have; routes for dollars on pay per token, for the top model's limit on a subscription; drops effort where the host has none.
+- Tables gain "Done when" and "Files"; parallel phases only on disjoint files, each in its own worktree.
+- Rulings are rows of their own, before the phase they block.
+- Finished rows are removed, never ticked; stale "Next" text outside the block is removed.
+- A done claim is checked against the code before a row is dropped.
+- Says when the work is too small to phase.
+- Running a phase: a fixed brief, one retry a tier up, then stop; each phase is logged.
+- Modes: dry run, and pinned (every phase on one model).
+- A worked example, an MIT licence.
+- Phases run in one session by default, on the lowest tier the plan needs; subagents only for work that will not fit, parallel work, or on request, orchestrated from a Mid-tier session.
+- The plan without an instruction file lives in `.phase-plan/`, locally ignored, so it never ships with the work.
+
+## 1.0.0
+
+- First version: phases with a model and effort each, written into `CLAUDE.md` or `AGENTS.md`.
