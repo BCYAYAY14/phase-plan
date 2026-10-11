@@ -18,7 +18,7 @@ Update with `git -C ~/.claude/skills/phase-plan pull`.
 | --- | --- |
 | `/phase-plan`, "plan the phases", "what's left and which model" | Reads the plan, issues and TODOs, proposes phases in chat, writes them once you agree |
 | "/phase-plan dry run" | Proposes in chat, writes nothing |
-| "run the plan", "run phase 2" | Runs the phases in this session, on the lowest tier the plan needs (it tells you if a cheaper session would do); subagents only for work too big for one session, parallel work, or when you ask. Logs each phase and removes its row |
+| "run the plan", "run phase 2" | Runs the phases in this session, on the lowest tier the plan needs (it tells you if a cheaper session would do); long work with phases on separate files runs those phases as parallel subagents; otherwise subagents only for work too big for one session, or when you ask. Logs each phase and removes its row |
 | "/phase-plan pinned to opus medium" | Every phase on one model |
 
 It tells you when the work is too small to need a plan. For long work it always plans: working phase by phase keeps the context small, which is where it saves, and phases that touch separate files run as parallel subagents, which finishes several times sooner at no extra cost.
