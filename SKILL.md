@@ -59,15 +59,16 @@ Reply in chat first. Do not write anything yet.
 
 Choose a **tier**, then map it to a model the user has.
 
+**Start at Mid; go up on evidence.** Current Mid models handle clear specs, tricky algorithms and known-cause bugs as well as Large ones; Large costs about twice as much for polish. So a phase starts at Mid unless one of the Large rows below holds, and the escalation rule (one retry a tier up) catches the rest.
+
 | Work | Tier · effort |
 | --- | --- |
 | Fixed commands that pass or fail (build, test, lint, verify) | Small · low |
 | Mechanical edits, renames, a runbook followed step by step, prose from an exact list | Mid · low |
-| A clear spec confined to a few files | Mid · medium |
-| A clear spec over a wide surface (several platforms, many screens) | Mid · high |
-| Delicate code with a known cause (layout, concurrency, sync, migrations, anything the repo warns about) | Large · medium |
-| Diagnosis with an unknown cause, design, judgment against a contract | Large · high |
-| Hard bugs that resist debugging, cross-cutting architecture | Large · xhigh, or Top only when the user asks |
+| A clear spec, any size; an algorithm the spec pins down; a bug with a known cause | Mid · medium |
+| Diagnosis with an unknown cause, design, judgment against a contract | Mid · high |
+| Code the repo itself flags as delicate (its landmines, warnings or rules name the area), or a phase a Mid attempt already failed | Large · medium |
+| Hard bugs that resist debugging, cross-cutting architecture, or the user asks for the best model | Large · high, or Top only when the user asks |
 | Owner-only steps (accounts, secrets, payments, devices, rulings) | none |
 
 Tier to model, for Claude Code (October 2026; update when the lineup changes):
@@ -81,13 +82,13 @@ Tier to model, for Claude Code (October 2026; update when the lineup changes):
 
 For another host (Codex, Cursor, another provider), map the tiers to its models by price band and state the mapping in chat. If a tier is missing, use the next tier up.
 
-On a subscription, prefer Mid over Large wherever the Large row's reason ("delicate", "judgment") does not clearly apply. On pay per token, the table stands.
+The same table serves both billing kinds: per token it saves dollars, on a subscription it saves the top model's limit.
 
 ## Saving tokens
 
 - Verify once, after the last edit, as its own Small phase. Never once per phase.
 - Phases with disjoint Files run in parallel.
-- A Large model never writes prose from a list, and a Small model never decides anything.
+- A Large model never writes prose from a list, and a Small model never decides anything. Never pick Large because a phase sounds hard; pick it because the repo says so or Mid failed.
 - Split a phase when one part is mechanical and another needs judgment. Merge phases that read the same context, so it is read once.
 - The phase brief points at the spec; it does not paste it.
 

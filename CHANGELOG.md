@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.0 (2026-10-13)
+
+- Tiers recalibrated: every phase starts at Mid; Large only for code the repo flags as delicate, a phase a Mid attempt failed, hard bugs that resist debugging, or on request.
+- A plan that needs a stronger model than the session sends only those phases up to a subagent; the rest stays in the session.
+- Scratch files stay in `.phase-plan/scratch/`; the session id is no longer logged.
+
 ## 2.0.0 (2026-10-12)
 
 - Works in any repo: falls back to `.phase-plan/PHASES.md`, locally ignored, when there is no instruction file, so the plan never ships with the work; finds work in plans, `TODO.md`, `ROADMAP.md`, open issues and TODO comments; finds the project's own verify command.
