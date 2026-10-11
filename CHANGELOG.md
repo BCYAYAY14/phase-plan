@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.0 (2026-10-13)
+
+- Design and front-end work (UI, layout, visual polish, interaction, motion, UI copy, choosing between designs) routes to Large by default; Mid only when the skill judges it enough, such as building an exact mockup or a mechanical UI change, and says why.
+
 ## 2.1.0 (2026-10-13)
 
 - Tiers recalibrated: every phase starts at Mid; Large only for code the repo flags as delicate, a phase a Mid attempt failed, hard bugs that resist debugging, or on request.
