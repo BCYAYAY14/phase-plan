@@ -4,7 +4,7 @@ A Claude Code skill that turns "what's left" in a repo into an ordered table of 
 
 **On long, multi-part work, it roughly halved the cost and finished 2 to 3× faster in our tests, with the same hidden-test scores. On small tasks it stays out of the way.** ([RESULTS.md](RESULTS.md))
 
-Version 2.5.0 · [CHANGELOG](CHANGELOG.md) · MIT
+Version 2.5.2 · [CHANGELOG](CHANGELOG.md) · MIT
 
 ## Install
 
@@ -24,7 +24,7 @@ mkdir -p ~/.claude/skills/phase-plan && curl -fsSL https://raw.githubusercontent
 | --- | --- |
 | `/phase-plan`, "plan the phases", "what's left and which model" | Reads the plan, issues and TODOs, proposes phases in chat, writes them once you agree |
 | "/phase-plan dry run" | Proposes in chat, writes nothing |
-| "run the plan", "run phase 2" | Runs the phases in this session, on the lowest tier the plan needs (it tells you if a cheaper session would do); long work with phases on separate files runs those phases as parallel subagents; otherwise subagents only for work too big for one session, or when you ask. Logs each phase and removes its row |
+| "run the plan", "run phase 2" | Runs the phases in one session, on the tier most of the work needs (it tells you if a cheaper session would do), sending harder phases up a tier; long work with phases on separate files runs those phases as parallel subagents; otherwise subagents only for work too big for one session, or when you ask. Logs each phase and removes its row |
 | "/phase-plan pinned to opus medium" | Every phase on one model |
 
 It tells you when the work is too small to need a plan. For long work it always plans: working phase by phase keeps the context small, which is where it saves, and phases that touch separate files run as parallel subagents, which finishes several times sooner at no extra cost.
@@ -66,4 +66,4 @@ Every phase starts at Mid, except design and front-end work, which starts at Lar
 
 ## Benchmark kit
 
-Not part of the install. To reproduce the results, clone the repo somewhere outside your skills folder (`git clone https://github.com/BCYAYAY14/phase-plan ~/phase-plan`). The skill itself is `skills/phase-plan/SKILL.md`; `bench/` reproduces them: `setup-task.sh` makes worktrees for a bundled task (`ledger`, `ledger-xl`, `recur`), `run.sh` runs an arm headless, `grade.py` grades with hidden tests and a blind review, and `tally.py --compare` prints cost and quality per arm from Claude Code's transcripts. `evals/` holds the skill's trigger and behaviour evals in skill-creator's format.
+Not part of the install. To reproduce the results, clone the repo somewhere outside your skills folder (`git clone https://github.com/BCYAYAY14/phase-plan ~/phase-plan`); the skill itself is `skills/phase-plan/SKILL.md`. In `bench/`: `setup-task.sh` makes worktrees for a bundled task (`ledger`, `ledger-xl`, `recur`), `run.sh` runs an arm headless, `grade.py` grades with hidden tests and a blind review, and `tally.py --compare` prints cost and quality per arm from Claude Code's transcripts. `evals/` holds the skill's trigger and behaviour evals in skill-creator's format.

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.5.2 (2026-10-13)
+
+- Where the phases block goes is now fixed: replace the block if present, else the top of a "Next" section, else a new `## Next` section appended at the end of the file (issue #1, thanks @DeltaEcho3).
+- README: version, the benchmark kit paragraph, the Use table's session-tier wording.
+
 ## 2.5.1 (2026-10-13)
 
 - Install with `npx skills add BCYAYAY14/phase-plan -g -a claude-code`; the skill moved to `skills/phase-plan/SKILL.md`, so installers copy only the skill.

@@ -48,7 +48,7 @@ Reply in chat first. Do not write anything yet.
 
 ## 3. Write it
 
-- The phases go in one block delimited by `<!-- phases:start -->` and `<!-- phases:end -->`, inside the file's "Next" section (create a `## Next` section if there is none). Replace the block if it exists.
+- The phases go in one block delimited by `<!-- phases:start -->` and `<!-- phases:end -->`. Where it goes, in order: if the block exists, replace it where it is; else if the file has a "Next" section (any heading level, "Next", "Next steps", "Up next"), put the block at the top of that section, replacing its existing list; else append a `## Next` heading at the end of the file and put the block under it.
 - **Leave nothing contradicting it.** Search the file for other "Next", "TODO", "Remaining" or "Up next" passages outside the block. Delete one the block now covers; merge a fact still true into the block's "Before phase N" lines. Say what was removed.
 - The written table drops Why: `# | Phase | Done when | Files | Spec | Model · effort`.
 - **Only open rows.** A finished row is removed, never ticked or marked DONE. Its outcome (date, what shipped, the usage line) goes to the plan file that owns the work, or to the "Log" section of `.phase-plan/PHASES.md` when there is no plan file.
