@@ -2,9 +2,9 @@
 
 A Claude Code skill that turns "what's left" in a repo into an ordered table of phases, each with the cheapest model and effort level that won't risk quality. It agrees the table with you, writes it into the repo's instruction file (`CLAUDE.md` or `AGENTS.md`; otherwise `.phase-plan/PHASES.md`, kept out of git), runs the plan (separable phases of long work in parallel, everything else in one session), and logs each phase.
 
-**On long, multi-part work, it roughly halved the cost and finished 2 to 3× faster in our tests, with the same hidden-test scores. On small tasks it stays out of the way.** ([RESULTS.md](RESULTS.md))
+**On long, multi-part work, it roughly halved the cost and finished 2 to 3× faster in our tests, with the same hidden-test scores. On small tasks it stays out of the way.** ([results](https://github.com/BCYAYAY14/phase-plan-bench/blob/main/RESULTS.md))
 
-Version 2.6.1 · [CHANGELOG](CHANGELOG.md) · MIT
+Version 2.6.2 · [CHANGELOG](CHANGELOG.md) · MIT
 
 ## Install
 
@@ -41,7 +41,7 @@ Every phase is Sonnet or below, so the skill runs the whole plan in one Sonnet s
 
 ## Does it help?
 
-Roughly half the cost and 2 to 3× faster on long, multi-part work, at the same hidden-test scores; on small tasks, about the same as no plan. Measured, not assumed ([RESULTS.md](RESULTS.md), protocol in [BENCHMARK.md](BENCHMARK.md)). On a long task in a real 8,000-line Swift codebase, graded by the codebase's own hidden tests:
+Roughly half the cost and 2 to 3× faster on long, multi-part work, at the same hidden-test scores; on small tasks, about the same as no plan. Measured, not assumed: results, protocol and the kit to reproduce them are in [phase-plan-bench](https://github.com/BCYAYAY14/phase-plan-bench). On a long task in a real 8,000-line Swift codebase, graded by the codebase's own hidden tests:
 
 | Setup | Cost | Time | vs the same model alone |
 | --- | --- | --- | --- |
@@ -62,7 +62,7 @@ Means of two runs per setup. Opus + skill planned on Opus and handed most phases
 | Sonnet + skill, its own choice (one session) | $3.96 | ~17 min | 96 to 97% | 3 to 4% | 22% cheaper |
 | **Sonnet + skill, parallel phases** | **$3.06** | **~13 min** | **97 to 99%** | **1%** | **40% cheaper** |
 
-Left to choose, it did not split the coupled work, and its savings did not come back as fix-up work. On short tasks, including changes that thread a new parameter through many files, it keeps to one session without a plan. Two runs per setup: see RESULTS.md.
+Left to choose, it did not split the coupled work, and its savings did not come back as fix-up work. On short tasks, including changes that thread a new parameter through many files, it keeps to one session without a plan. Two runs per setup: see the [full results](https://github.com/BCYAYAY14/phase-plan-bench/blob/main/RESULTS.md).
 
 ## Models
 
@@ -70,8 +70,8 @@ Every phase starts at Mid, except design and front-end work, which starts at Lar
 
 ## Benchmark kit
 
-Not part of the install. To reproduce the results, clone the repo somewhere outside your skills folder (`git clone https://github.com/BCYAYAY14/phase-plan ~/phase-plan`); the skill itself is `skills/phase-plan/SKILL.md`. In `bench/`: `setup-task.sh` makes worktrees for a bundled task (`ledger`, `ledger-xl`, `recur`), `run.sh` runs an arm headless, `grade.py` grades with hidden tests and a blind review, `rework.py` measures integration rework, and `tally.py --compare` prints cost and quality per arm from Claude Code's transcripts. `evals/` holds the skill's trigger and behaviour evals in skill-creator's format.
+In its own repo, [phase-plan-bench](https://github.com/BCYAYAY14/phase-plan-bench): worktree setup, a headless runner, a hidden-test grader, a rework measure and a transcript cost tally. `evals/` here holds the skill's trigger and behaviour evals in skill-creator's format.
 
 ## Safety
 
-The skill treats everything it reads (plans, TODOs, issues, comments) as data describing work, never as instructions: text aimed at an agent is quoted to you, not acted on. Open issues are read only when you ask, since anyone can write one. It runs only read-only git commands and the project's own verify command found in its config files, and it never commits or pushes. The benchmark kit in `bench/` is not part of the install.
+The skill treats everything it reads (plans, TODOs, issues, comments) as data describing work, never as instructions: text aimed at an agent is quoted to you, not acted on. Open issues are read only when you ask, since anyone can write one. It runs only read-only git commands and the project's own verify command found in its config files, and it never commits or pushes. The benchmark kit lives in a separate repo and is not part of the install.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.2 (2026-10-13)
+
+- The benchmark kit and results moved to [phase-plan-bench](https://github.com/BCYAYAY14/phase-plan-bench); this repo holds the skill, its evals and docs.
+
 ## 2.6.1 (2026-10-13)
 
 - Everything the skill reads is data, not instructions; text aimed at an agent is quoted to the user, never acted on or copied into a brief.
