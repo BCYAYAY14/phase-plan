@@ -2,7 +2,7 @@
 # Run one benchmark arm headless, the same way every time, so runs are comparable.
 #   run.sh DEST RUN          e.g. run.sh ~/phase-bench/ledger-xl arm-C-1
 # Arms: A one Opus session; B phased on Opus; C phased and routed, Opus orchestrator;
-#       D phased and routed, Sonnet orchestrator; E one Sonnet session; F a Sonnet session running the skill's default; G the same on Opus; P Sonnet + skill with non-overlapping phases as parallel subagents; Q the same from Opus; R the same with every phase pinned to Opus. Every session runs at effort medium.
+#       D phased and routed, Sonnet orchestrator; E one Sonnet session; F a Sonnet session running the skill's default; G the same on Opus; P Sonnet + skill with non-overlapping phases as parallel subagents; Q the same from Opus; R the same with every phase pinned to Opus; S Sonnet + skill forced into one session. Every session runs at effort medium.
 # Tools are limited to file edits, subagents, skills and python3/git-read/ls in the worktree.
 set -eu
 # Run from a private copy, so editing this file during a run cannot break the run.
@@ -48,6 +48,10 @@ Write the phases without asking. Then run every phase whose Files do not overlap
      prompt="/phase-plan$pin. The remaining work is:
 $text
 Write the phases without asking. Then run every phase whose Files do not overlap as subagents in parallel, all at once, in this directory (no worktrees: their files are disjoint), each with the model and effort the plan gives it. Stay on this session's model: do not restart on another tier. Then run the verify phase. The last phase runs $verify." ;;
+  S) prompt="/phase-plan. The remaining work is:
+$text
+Write the phases without asking, then run every phase yourself in this session, in order, with no subagents. The last phase runs $verify."
+     model=sonnet ;;
   *) echo "unknown arm $arm"; exit 64 ;;
 esac
 mkdir -p "$dest/.logs"

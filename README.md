@@ -4,7 +4,7 @@ A Claude Code skill that turns "what's left" in a repo into an ordered table of 
 
 **On long, multi-part work, it roughly halved the cost and finished 2 to 3× faster in our tests, with the same hidden-test scores. On small tasks it stays out of the way.** ([RESULTS.md](RESULTS.md))
 
-Version 2.5.2 · [CHANGELOG](CHANGELOG.md) · MIT
+Version 2.6.0 · [CHANGELOG](CHANGELOG.md) · MIT
 
 ## Install
 
@@ -58,7 +58,7 @@ Roughly half the cost and 2 to 3× faster on long, multi-part work, at the same 
 
 Means of two runs per setup. Opus + skill planned on Opus and handed most phases to Sonnet subagents.
 
-On short tasks it keeps to one session and costs about the same as no plan; its saving there is choosing the cheaper model. Two runs per arm: see the caveats in RESULTS.md.
+On an unseen task with tightly coupled modules, the skill chose one session by itself and cost about 22% less than Sonnet alone at the same quality. On short tasks, including changes that thread a new parameter through many files, it keeps to one session without a plan. Two runs per arm: see RESULTS.md.
 
 ## Models
 
@@ -66,4 +66,4 @@ Every phase starts at Mid, except design and front-end work, which starts at Lar
 
 ## Benchmark kit
 
-Not part of the install. To reproduce the results, clone the repo somewhere outside your skills folder (`git clone https://github.com/BCYAYAY14/phase-plan ~/phase-plan`); the skill itself is `skills/phase-plan/SKILL.md`. In `bench/`: `setup-task.sh` makes worktrees for a bundled task (`ledger`, `ledger-xl`, `recur`), `run.sh` runs an arm headless, `grade.py` grades with hidden tests and a blind review, and `tally.py --compare` prints cost and quality per arm from Claude Code's transcripts. `evals/` holds the skill's trigger and behaviour evals in skill-creator's format.
+Not part of the install. To reproduce the results, clone the repo somewhere outside your skills folder (`git clone https://github.com/BCYAYAY14/phase-plan ~/phase-plan`); the skill itself is `skills/phase-plan/SKILL.md`. In `bench/`: `setup-task.sh` makes worktrees for a bundled task (`ledger`, `ledger-xl`, `recur`), `run.sh` runs an arm headless, `grade.py` grades with hidden tests and a blind review, `rework.py` measures integration rework, and `tally.py --compare` prints cost and quality per arm from Claude Code's transcripts. `evals/` holds the skill's trigger and behaviour evals in skill-creator's format.

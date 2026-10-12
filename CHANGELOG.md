@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.6.0 (2026-10-13)
+
+- Work is sized by its new logic, not its file count: a change that mostly threads a parameter, type or rename through existing code skips the plan, however many files it reaches.
+- Phases that share an interface the work is changing run in order in one session, never in parallel, even when their files are disjoint.
+- Results: an unseen task with tightly coupled modules, with integration rework measured (`bench/rework.py`).
+
 ## 2.5.2 (2026-10-13)
 
 - Where the phases block goes is now fixed: replace the block if present, else the top of a "Next" section, else a new `## Next` section appended at the end of the file (issue #1, thanks @DeltaEcho3).

@@ -16,6 +16,7 @@ The skill changes two things at once: it splits work into sessions (phasing) and
 | P | Sonnet + skill, phases with disjoint files as parallel subagents | Parallel against one session: P minus F, and wall time |
 | Q | P from an Opus session (subagents at the plan's tiers) | Orchestrator tier with parallel phases: Q minus P |
 | R | Q with every phase pinned to Opus | Opus subagents against routed ones: R minus Q |
+| S | Sonnet + skill, forced into one session with no subagents | One session against parallel on the same plan: S minus P |
 
 Every arm's total includes the planning turns, the context each phase reloads, the phase reports and the log edits. They are all in the same session's transcripts, and `tally.py` reads the subagents' transcripts with it.
 
@@ -90,7 +91,7 @@ Rules that keep it fair:
 for r in arm-A-1 arm-B-1 arm-C-1 arm-D-1; do ~/phase-plan/bench/run.sh ~/phase-bench/ledger-xl $r & done; wait
 ```
 
-Each run's final message is in `DEST/.logs/<run>.out`. `bench/tasks/ledger-xl` is the larger task: 13 items, a 620-line reference, 87 hidden tests. The results also use `graph`, a task built from a private Swift app's graphing engine (its source is not published). `bench/tasks/recur` is the hard one: an RRULE expansion engine (a subset of RFC 5545), 52 hidden tests, 29 of them the RFC's own worked examples, so the answers do not rest on the reference.
+Each run's final message is in `DEST/.logs/<run>.out`. `bench/tasks/ledger-xl` is the larger task: 13 items, a 620-line reference, 87 hidden tests. The results also use `graph`, a task built from a private Swift app's graphing engine (its source is not published). Integration rework (cost and edits after the first full test run) comes from `bench/rework.py DEST`. `bench/tasks/recur` is the hard one: an RRULE expansion engine (a subset of RFC 5545), 52 hidden tests, 29 of them the RFC's own worked examples, so the answers do not rest on the reference.
 
 ## 4. Grade quality before counting cost
 

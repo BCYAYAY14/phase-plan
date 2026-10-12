@@ -94,17 +94,57 @@ def run_hidden(runner, code, hidden):
         return {"areas": {}, "failures": [{"test": "runner", "error": (p.stderr or p.stdout)[-300:]}]}
 
 
-def swift_hidden(task_dir, task, code):
-    """Swift tasks: put the full original test files over the run's, then run only the hidden ids."""
-    dst = code / task["test_dir"]
-    dst.mkdir(parents=True, exist_ok=True)
-    for f in (task_dir / "hidden").glob("*.swift"):
-        shutil.copy(f, dst / f.name)
-    p = sh([sys.executable, "-I", str(HERE / "swift_tests.py"), str(code), "--only", str(task_dir / "hidden_ids.txt")], timeout=3600)
+def _run_swift(code, ids_file):
+    p = sh([sys.executable, "-I", str(HERE / "swift_tests.py"), str(code), "--only", str(ids_file)], timeout=3600)
     try:
         return json.loads(p.stdout.strip().splitlines()[-1])
     except (ValueError, IndexError):
-        return {"areas": {}, "failures": [{"test": "runner", "error": (p.stderr or p.stdout)[-300:]}]}
+        return {"areas": {}, "failures": [{"test": "runner", "error": (p.stderr or p.stdout)[-300:]}], "build_failed": True}
+
+
+def swift_hidden(task_dir, task, code):
+    """Swift tasks: put the original test files over the run's and run only the hidden ids.
+
+    If that does not build (one wrong signature stops the whole target), fall back to one
+    hidden file at a time over the run's own tests, so a run is scored on what does compile."""
+    dst = code / task["test_dir"]
+    dst.mkdir(parents=True, exist_ok=True)
+    own = {f.name: f.read_bytes() for f in dst.glob("*.swift")}
+    hidden_files = sorted((task_dir / "hidden").glob("*.swift"))
+    for f in hidden_files:
+        shutil.copy(f, dst / f.name)
+    ids_all = task_dir / "hidden_ids.txt"
+    r = _run_swift(code, ids_all)
+    if not r.get("build_failed"):
+        return r
+    wanted = set(ids_all.read_text().split())
+    merged = {"areas": {}, "failures": [], "results": {}, "per_file": True}
+    for f in hidden_files:
+        classes = set(re.findall(r"class\s+(\w+)\s*:\s*XCTestCase", f.read_text()))
+        ids = [t for t in wanted if t.split("/")[0].split(".")[-1] in classes]
+        if not ids:
+            continue
+        for g in dst.glob("*.swift"):
+            g.unlink()
+        for name, data in own.items():
+            (dst / name).write_bytes(data)
+        shutil.copy(f, dst / f.name)
+        tmp_ids = code / ".hidden_ids_one.txt"
+        tmp_ids.write_text("\n".join(ids) + "\n")
+        one = _run_swift(code, tmp_ids)
+        if one.get("build_failed"):
+            for t in ids:
+                cls = t.split("/")[0].split(".")[-1]
+                a = merged["areas"].setdefault(cls, {"passed": 0, "ran": 0})
+                a["ran"] += 1
+            merged["failures"].append({"test": f.name, "error": "does not compile against the run: " + one["failures"][0]["error"][:200]})
+            continue
+        for cls, a in one["areas"].items():
+            m = merged["areas"].setdefault(cls, {"passed": 0, "ran": 0})
+            m["passed"] += a["passed"]
+            m["ran"] += a["ran"]
+        merged["failures"] += one["failures"]
+    return merged
 
 
 EXTRA_MARKERS = []

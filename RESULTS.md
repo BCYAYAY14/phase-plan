@@ -18,6 +18,21 @@ Every number here is from `BENCHMARK.md`'s protocol: the same task in fresh work
 - Planning helps even without splitting: in one session it cut Sonnet's cost by about 36%. The runs that planned made fewer, smaller requests (about 100k to 140k tokens of context against about 190k): working phase by phase keeps each phase's reading scoped.
 - Opus bought nothing on this task.
 
+## An unseen task with tightly coupled modules
+
+Run on a frozen copy of the skill (v2.5.2) after a reader asked whether the savings hold when phases depend on each other. `text`: a private app's text engine (about 17,000 lines of Swift, never used to tune the skill) with three modules that call each other stripped to declarations: inline style spans, the block source (which reads and writes the spans) and undo (which records both). Removing them broke 227 of 405 tests across 17 test classes; 117 are hidden. Rework is the cost after the first full test run once every target file was edited (`bench/rework.py`).
+
+| Arm | Mean $ | Range | Wall time | Hidden tests | Rework share |
+| --- | --- | --- | --- | --- | --- |
+| Sonnet + skill, forced parallel subagents | 3.06 | 2.60 to 3.52 | 12.5 to 13 min | 97%, 99% | 1%, 1% |
+| Sonnet + skill, its own choice | 3.96 | 3.70 to 4.21 | 16 to 18 min | 96%, 97% | 4%, 3% |
+| Sonnet + skill, forced one session | 4.35 | 4.25 to 4.46 | 17 to 19 min | 99%, 98% | 20%, 3% |
+| One Sonnet session, no skill | 5.10 | 4.41 to 5.80 | 17 to 20 min | 96%, 97% | 8%, 24% |
+
+- Left to choose, the skill did not split coupled work: both runs planned one session because the modules depend on each other. It cost about 22% less than Sonnet alone at the same quality.
+- Forced parallel was still cheapest and fastest with almost no rework, because every declaration and doc comment was kept: the coupling was in behaviour, not in a changing interface.
+- Where an interface does change (a new parameter threaded through many files, mostly mechanical), a plan cost more than no plan. Since 2.6.0 the skill sizes work by its new logic rather than its file count, skips the plan for that kind of change, and never runs phases in parallel when they share an interface the work is changing.
+
 ## Short tasks: Python, written from a spec
 
 | Task | One Sonnet session | Sonnet + skill | One Opus session | Phased across subagents (old 1.x behaviour) |
