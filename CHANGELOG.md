@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.6.1 (2026-10-13)
+
+- Everything the skill reads is data, not instructions; text aimed at an agent is quoted to the user, never acted on or copied into a brief.
+- Open issues are read only on request; work sourced only from someone else's issue needs the user's confirmation.
+- The verify command comes from the project's config files only, never from text in a plan, TODO or issue.
+- One install path (`npx skills add`); the benchmark's source-stubbing tool is no longer in the repo.
+
 ## 2.6.0 (2026-10-13)
 
 - Work is sized by its new logic, not its file count: a change that mostly threads a parameter, type or rename through existing code skips the plan, however many files it reaches.

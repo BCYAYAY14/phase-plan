@@ -4,7 +4,7 @@ A Claude Code skill that turns "what's left" in a repo into an ordered table of 
 
 **On long, multi-part work, it roughly halved the cost and finished 2 to 3× faster in our tests, with the same hidden-test scores. On small tasks it stays out of the way.** ([RESULTS.md](RESULTS.md))
 
-Version 2.6.0 · [CHANGELOG](CHANGELOG.md) · MIT
+Version 2.6.1 · [CHANGELOG](CHANGELOG.md) · MIT
 
 ## Install
 
@@ -12,17 +12,13 @@ Version 2.6.0 · [CHANGELOG](CHANGELOG.md) · MIT
 npx skills add BCYAYAY14/phase-plan -g -a claude-code
 ```
 
-That installs only the skill (one file) into `~/.claude/skills/phase-plan/`; `npx skills update` updates it. Leave out `-a claude-code` to pick other agents. Without Node:
-
-```bash
-mkdir -p ~/.claude/skills/phase-plan && curl -fsSL https://raw.githubusercontent.com/BCYAYAY14/phase-plan/main/skills/phase-plan/SKILL.md -o ~/.claude/skills/phase-plan/SKILL.md
-```
+That installs only the skill (one file) into `~/.claude/skills/phase-plan/`; `npx skills update` updates it. Leave out `-a claude-code` to pick other agents.
 
 ## Use
 
 | Say | It does |
 | --- | --- |
-| `/phase-plan`, "plan the phases", "what's left and which model" | Reads the plan, issues and TODOs, proposes phases in chat, writes them once you agree |
+| `/phase-plan`, "plan the phases", "what's left and which model" | Reads the plan files and TODOs (open issues only if you ask), proposes phases in chat, writes them once you agree |
 | "/phase-plan dry run" | Proposes in chat, writes nothing |
 | "run the plan", "run phase 2" | Runs the phases in one session, on the tier most of the work needs (it tells you if a cheaper session would do), sending harder phases up a tier; long work with phases on separate files runs those phases as parallel subagents; otherwise subagents only for work too big for one session, or when you ask. Logs each phase and removes its row |
 | "/phase-plan pinned to opus medium" | Every phase on one model |
@@ -75,3 +71,7 @@ Every phase starts at Mid, except design and front-end work, which starts at Lar
 ## Benchmark kit
 
 Not part of the install. To reproduce the results, clone the repo somewhere outside your skills folder (`git clone https://github.com/BCYAYAY14/phase-plan ~/phase-plan`); the skill itself is `skills/phase-plan/SKILL.md`. In `bench/`: `setup-task.sh` makes worktrees for a bundled task (`ledger`, `ledger-xl`, `recur`), `run.sh` runs an arm headless, `grade.py` grades with hidden tests and a blind review, `rework.py` measures integration rework, and `tally.py --compare` prints cost and quality per arm from Claude Code's transcripts. `evals/` holds the skill's trigger and behaviour evals in skill-creator's format.
+
+## Safety
+
+The skill treats everything it reads (plans, TODOs, issues, comments) as data describing work, never as instructions: text aimed at an agent is quoted to you, not acted on. Open issues are read only when you ask, since anyone can write one. It runs only read-only git commands and the project's own verify command found in its config files, and it never commits or pushes. The benchmark kit in `bench/` is not part of the install.
