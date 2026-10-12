@@ -1,0 +1,62 @@
+{
+  "skill_name": "phase-plan",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/phase-plan",
+      "files": ["evals/fixtures/todo-app"],
+      "expected_output": "A phase table in chat built from TODO.md, then a rewritten phases block in CLAUDE.md once approved.",
+      "expectations": [
+        "The chat table has the columns #, Phase, Done when, Files, Spec, Model · effort, Why",
+        "The filter row is kept, because no test proves the fix (filter.js still compares with <, and no test covers today's rows)",
+        "The ISO-or-locale question is its own ruling row with Model 'none', placed before the export phase",
+        "The verify phase names `npm test` and `npm run lint` from package.json",
+        "Nothing is written to any file before the user agrees"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/phase-plan, write it",
+      "files": ["evals/fixtures/todo-app"],
+      "expected_output": "CLAUDE.md's phases block replaced, no DONE rows, the stale Next bullet removed.",
+      "expectations": [
+        "CLAUDE.md contains exactly one phases:start and one phases:end marker",
+        "No row in the written table contains DONE or a tick",
+        "The written table has no Why column",
+        "The bullet 'Export (started 2026-01-03, superseded by TODO.md)' is gone, and the reply says it was removed",
+        "No git commit was made"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/phase-plan dry run",
+      "files": ["evals/fixtures/todo-app"],
+      "expected_output": "A table in chat; every file unchanged.",
+      "expectations": [
+        "A phase table appears in chat",
+        "No file in the fixture changed"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "split the remaining work into phases",
+      "files": ["evals/fixtures/no-handoff"],
+      "expected_output": "It says one rename is too small to phase and recommends a single session.",
+      "expectations": [
+        "The reply recommends one session at one model instead of a multi-phase table",
+        "If it writes anything, it is .phase-plan/PHASES.md with .phase-plan/ in .git/info/exclude, never a new CLAUDE.md or a root PHASES.md"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "/phase-plan pinned to sonnet medium, write it",
+      "files": ["evals/fixtures/todo-app"],
+      "expected_output": "Every non-ruling row is Sonnet · medium.",
+      "expectations": [
+        "Every row except ruling rows reads Sonnet · medium",
+        "Ruling rows read none",
+        "CLAUDE.md's phases block holds the pinned table (the fixture has a CLAUDE.md, so no PHASES.md is made)"
+      ]
+    }
+  ]
+}

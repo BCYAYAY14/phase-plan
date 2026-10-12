@@ -1,16 +1,20 @@
 # phase-plan
 
-A Claude Code skill that turns "what's left" in a repo into an ordered table of phases, each with the cheapest model and effort level that won't risk quality. It agrees the table with you, writes it into the repo's instruction file (`CLAUDE.md` or `AGENTS.md`; otherwise `.phase-plan/PHASES.md`, kept out of git), runs the plan (in one session by default), and logs each phase.
+A Claude Code skill that turns "what's left" in a repo into an ordered table of phases, each with the cheapest model and effort level that won't risk quality. It agrees the table with you, writes it into the repo's instruction file (`CLAUDE.md` or `AGENTS.md`; otherwise `.phase-plan/PHASES.md`, kept out of git), runs the plan (separable phases of long work in parallel, everything else in one session), and logs each phase.
 
-Version 2.4.0 · [CHANGELOG](CHANGELOG.md) · MIT
+**On long, multi-part work, it roughly halved the cost and finished 2 to 3× faster in our tests, with the same hidden-test scores. On small tasks it stays out of the way.** ([RESULTS.md](RESULTS.md))
+
+Version 2.5.0 · [CHANGELOG](CHANGELOG.md) · MIT
 
 ## Install
 
+Installs only the skill (one file):
+
 ```bash
-git clone https://github.com/BCYAYAY14/phase-plan ~/.claude/skills/phase-plan
+mkdir -p ~/.claude/skills/phase-plan && curl -fsSL https://raw.githubusercontent.com/BCYAYAY14/phase-plan/main/SKILL.md -o ~/.claude/skills/phase-plan/SKILL.md
 ```
 
-Update with `git -C ~/.claude/skills/phase-plan pull`.
+Run the same command again to update.
 
 ## Use
 
@@ -37,6 +41,27 @@ A small web app with a `TODO.md` listing a CSV export, a broken date filter, and
 
 Every phase is Sonnet or below, so the skill runs the whole plan in one Sonnet session. Phases 1 and 2 touch different files, so they could run in parallel (each in its own worktree) if you ask.
 
+## Does it help?
+
+Roughly half the cost and 2 to 3× faster on long, multi-part work, at the same hidden-test scores; on small tasks, about the same as no plan. Measured, not assumed ([RESULTS.md](RESULTS.md), protocol in [BENCHMARK.md](BENCHMARK.md)). On a long task in a real 8,000-line Swift codebase, graded by the codebase's own hidden tests:
+
+| Setup | Cost | Time | vs the same model alone |
+| --- | --- | --- | --- |
+| Sonnet alone | $4.09 | ~17 min | baseline |
+| Sonnet + skill, one session | $2.62 | ~15 min | 36% cheaper |
+| **Sonnet + skill, parallel phases** | **$1.97** | **~6 min** | **52% cheaper, ~3x faster** |
+| Opus alone | $5.45 | ~17 min | baseline |
+| Opus + skill, parallel phases | $2.56 | ~7.5 min | 53% cheaper, ~2x faster |
+| Opus + skill, parallel phases, all on Opus | $3.41 | ~7 min | 37% cheaper, ~2.5x faster |
+
+Means of two runs per setup. Opus + skill planned on Opus and handed most phases to Sonnet subagents.
+
+On short tasks it keeps to one session and costs about the same as no plan; its saving there is choosing the cheaper model. Two runs per arm: see the caveats in RESULTS.md.
+
 ## Models
 
 Every phase starts at Mid, except design and front-end work, which starts at Large unless the skill judges Mid enough (an exact mockup to build, or a mechanical UI change) and says why. It also goes up a tier when the repo flags the code as delicate, a Mid attempt failed, or you ask. Rows are chosen by tier (Small, Mid, Large, Top) and mapped to what you have: in Claude Code today Haiku 5.5, Sonnet 5.5, Opus 5.5 and Fable 5.1 (Fable only when you ask). On another host the skill maps tiers by price band. It asks once whether you pay per token or by subscription: per token it optimises dollars; on a subscription it protects the top model's usage limit.
+
+## Benchmark kit
+
+Not part of the install. To reproduce the results, clone the repo somewhere outside your skills folder (`git clone https://github.com/BCYAYAY14/phase-plan ~/phase-plan`); `bench/` reproduces them: `setup-task.sh` makes worktrees for a bundled task (`ledger`, `ledger-xl`, `recur`), `run.sh` runs an arm headless, `grade.py` grades with hidden tests and a blind review, and `tally.py --compare` prints cost and quality per arm from Claude Code's transcripts. `evals/` holds the skill's trigger and behaviour evals in skill-creator's format.

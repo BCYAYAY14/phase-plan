@@ -1,0 +1,7 @@
+{
+  "name": "recur",
+  "task": "Complete every item in TODO.md so the code matches SPEC.md. Work only inside this directory.",
+  "verify": "python3 -m unittest discover -s tests",
+  "size": "7 TODO items, about 300 lines in the reference, 52 hidden tests (29 are RFC 5545's own examples)",
+  "phases_expected": "parsing (mechanical), the expansion engine (hard), events, CLI, tests, README, verify"
+}

@@ -1,0 +1,7 @@
+{
+  "name": "ledger",
+  "task": "Complete every item in TODO.md so the code matches SPEC.md. Work only inside this directory.",
+  "verify": "python3 -m unittest discover -s tests",
+  "size": "7 TODO items, about 450 lines in the reference, Python standard library",
+  "phases_expected": "parsing, a two-cause bug, reports, recurring detection, CLI, tests, README, verify"
+}

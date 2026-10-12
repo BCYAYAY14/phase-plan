@@ -1,0 +1,14 @@
+[
+  {"query": "/phase-plan", "should_trigger": true},
+  {"query": "split the remaining work into phases and tell me which model for each", "should_trigger": true},
+  {"query": "what's left on this project, and which model should do what?", "should_trigger": true},
+  {"query": "plan the phases to the next release and put them in the handoff", "should_trigger": true},
+  {"query": "run phase 3 from the table", "should_trigger": true},
+  {"query": "recommend effort levels for the remaining tasks", "should_trigger": true},
+  {"query": "fix the failing test in src/filter.js", "should_trigger": false},
+  {"query": "what does phase-locked loop mean in electronics?", "should_trigger": false},
+  {"query": "write a project plan document for my team's Q3 launch", "should_trigger": false},
+  {"query": "which Claude model is cheapest per token?", "should_trigger": false},
+  {"query": "review my diff for bugs", "should_trigger": false},
+  {"query": "enter plan mode and design the auth refactor", "should_trigger": false}
+]

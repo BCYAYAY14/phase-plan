@@ -1,0 +1,13 @@
+{
+  "_source": "Anthropic first-party API list prices per million tokens, as cached by the claude-api skill on 2026-10-06. Haiku's cache read is derived (0.1x input). Confirm at https://www.anthropic.com/pricing before quoting a number. On a subscription these are API-equivalent dollars, not what you pay.",
+  "cache_write_5m_multiplier": 1.25,
+  "cache_write_1h_multiplier": 2.0,
+  "fast_multiplier": 2.0,
+  "models": {
+    "claude-fable-5-1": {"input": 10.0, "output": 50.0, "cache_read": 0.25},
+    "claude-opus-5-5": {"input": 4.0, "output": 20.0, "cache_read": 0.20},
+    "claude-sonnet-5-5": {"input": 2.0, "output": 10.0, "cache_read": 0.20},
+    "claude-haiku-5-5": {"input": 0.10, "output": 0.50, "cache_read": 0.01,
+      "long_context": {"threshold": 100000, "input": 0.50, "output": 2.50, "cache_read": 0.05}}
+  }
+}
