@@ -58,7 +58,15 @@ Roughly half the cost and 2 to 3× faster on long, multi-part work, at the same 
 
 Means of two runs per setup. Opus + skill planned on Opus and handed most phases to Sonnet subagents.
 
-On an unseen task with tightly coupled modules, the skill chose one session by itself and cost about 22% less than Sonnet alone at the same quality. On short tasks, including changes that thread a new parameter through many files, it keeps to one session without a plan. Two runs per arm: see RESULTS.md.
+**Coupled task.** A frozen copy of the skill on a text engine it had never seen (about 17,000 lines of Swift, three modules that call each other, 117 hidden tests). Rework is the share of cost spent after the first full test run:
+
+| Setup | Cost | Time | Hidden tests | Rework | vs Sonnet alone |
+| --- | --- | --- | --- | --- | --- |
+| Sonnet alone | $5.10 | ~18 min | 96 to 97% | 8 to 24% | baseline |
+| Sonnet + skill, its own choice (one session) | $3.96 | ~17 min | 96 to 97% | 3 to 4% | 22% cheaper |
+| **Sonnet + skill, parallel phases** | **$3.06** | **~13 min** | **97 to 99%** | **1%** | **40% cheaper** |
+
+Left to choose, it did not split the coupled work, and its savings did not come back as fix-up work. On short tasks, including changes that thread a new parameter through many files, it keeps to one session without a plan. Two runs per setup: see RESULTS.md.
 
 ## Models
 
