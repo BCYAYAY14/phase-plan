@@ -1,5 +1,0 @@
-{
-  "name": "todo-app",
-  "private": true,
-  "scripts": { "test": "node --test", "lint": "node --check src/filter.js" }
-}

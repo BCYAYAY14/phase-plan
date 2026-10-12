@@ -4,7 +4,7 @@ A Claude Code skill that turns "what's left" in a repo into an ordered table of 
 
 **On long, multi-part work, it roughly halved the cost and finished 2 to 3× faster in our tests, with the same hidden-test scores. On small tasks it stays out of the way.** ([results](https://github.com/BCYAYAY14/phase-plan-bench/blob/main/RESULTS.md))
 
-Version 2.6.2 · [CHANGELOG](CHANGELOG.md) · MIT
+Version 2.6.3 · [CHANGELOG](CHANGELOG.md) · MIT
 
 ## Install
 
@@ -70,7 +70,7 @@ Every phase starts at Mid, except design and front-end work, which starts at Lar
 
 ## Benchmark kit
 
-In its own repo, [phase-plan-bench](https://github.com/BCYAYAY14/phase-plan-bench): worktree setup, a headless runner, a hidden-test grader, a rework measure and a transcript cost tally. `evals/` here holds the skill's trigger and behaviour evals in skill-creator's format.
+In its own repo, [phase-plan-bench](https://github.com/BCYAYAY14/phase-plan-bench): worktree setup, a headless runner, a hidden-test grader, a rework measure and a transcript cost tally. The skill's evals are there too.
 
 ## Safety
 

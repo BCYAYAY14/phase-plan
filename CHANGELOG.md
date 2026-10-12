@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.3 (2026-10-13)
+
+- The evals moved to [phase-plan-bench](https://github.com/BCYAYAY14/phase-plan-bench) with the rest of the test kit.
+
 ## 2.6.2 (2026-10-13)
 
 - The benchmark kit and results moved to [phase-plan-bench](https://github.com/BCYAYAY14/phase-plan-bench); this repo holds the skill, its evals and docs.
