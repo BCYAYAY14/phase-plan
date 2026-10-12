@@ -8,13 +8,15 @@ Version 2.5.0 · [CHANGELOG](CHANGELOG.md) · MIT
 
 ## Install
 
-Installs only the skill (one file):
-
 ```bash
-mkdir -p ~/.claude/skills/phase-plan && curl -fsSL https://raw.githubusercontent.com/BCYAYAY14/phase-plan/main/SKILL.md -o ~/.claude/skills/phase-plan/SKILL.md
+npx skills add BCYAYAY14/phase-plan -g -a claude-code
 ```
 
-Run the same command again to update.
+That installs only the skill (one file) into `~/.claude/skills/phase-plan/`; `npx skills update` updates it. Leave out `-a claude-code` to pick other agents. Without Node:
+
+```bash
+mkdir -p ~/.claude/skills/phase-plan && curl -fsSL https://raw.githubusercontent.com/BCYAYAY14/phase-plan/main/skills/phase-plan/SKILL.md -o ~/.claude/skills/phase-plan/SKILL.md
+```
 
 ## Use
 
@@ -64,4 +66,4 @@ Every phase starts at Mid, except design and front-end work, which starts at Lar
 
 ## Benchmark kit
 
-Not part of the install. To reproduce the results, clone the repo somewhere outside your skills folder (`git clone https://github.com/BCYAYAY14/phase-plan ~/phase-plan`); `bench/` reproduces them: `setup-task.sh` makes worktrees for a bundled task (`ledger`, `ledger-xl`, `recur`), `run.sh` runs an arm headless, `grade.py` grades with hidden tests and a blind review, and `tally.py --compare` prints cost and quality per arm from Claude Code's transcripts. `evals/` holds the skill's trigger and behaviour evals in skill-creator's format.
+Not part of the install. To reproduce the results, clone the repo somewhere outside your skills folder (`git clone https://github.com/BCYAYAY14/phase-plan ~/phase-plan`). The skill itself is `skills/phase-plan/SKILL.md`; `bench/` reproduces them: `setup-task.sh` makes worktrees for a bundled task (`ledger`, `ledger-xl`, `recur`), `run.sh` runs an arm headless, `grade.py` grades with hidden tests and a blind review, and `tally.py --compare` prints cost and quality per arm from Claude Code's transcripts. `evals/` holds the skill's trigger and behaviour evals in skill-creator's format.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.5.1 (2026-10-13)
+
+- Install with `npx skills add BCYAYAY14/phase-plan -g -a claude-code`; the skill moved to `skills/phase-plan/SKILL.md`, so installers copy only the skill.
+
 ## 2.5.0 (2026-10-13)
 
 - Results published (RESULTS.md, a summary in the README) with the benchmark kit (`bench/`, `tally.py`, `prices.json`, BENCHMARK.md) and the evals.
